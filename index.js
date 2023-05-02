@@ -9,6 +9,8 @@ const app = express();
 const errorHandler = require('./middleware/errorHandler ')
 connectionDB();
 
+const User = require('./model/User')
+
 const port = process.env.PORT;
 // for parsing application/json
 app.use(bodyParser.json())
