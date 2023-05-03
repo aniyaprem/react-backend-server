@@ -6,7 +6,8 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const app = express();
-const errorHandler = require('./middleware/errorHandler ')
+const errorHandler = require('./middleware/errorHandler')
+const router = require('./router/index')
 connectionDB();
 
 const User = require('./model/User')
@@ -28,14 +29,19 @@ app.use(
 );
 
 app.use(fileUpload());
+app.use(router);
 app.use(errorHandler);
-process.on('unhandledRejection', e => console.log(e)); //unhandled promise rejections
-process.on('uncaughtException', e => console.log(e)); //unhandled errors
+
+
+
 const server = app.listen(port, ()=>{
-    console.log(`Server started on ${port}`);
+    console.log(`Server started on ${port}`.blue.bold);
 });
 //Handle unhandled promise rejection
 process.on('unhandledRejection', (err, promise)=>{
     console.log(`Error: ${err.message}`);
     server.close(() => process.exit(1));
 });
+
+process.on('unhandledRejection', e => console.log(e)); //unhandled promise rejections
+process.on('uncaughtException', e => console.log(e)); //unhandled errors
