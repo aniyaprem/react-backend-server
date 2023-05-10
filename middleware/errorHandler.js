@@ -1,10 +1,27 @@
-const errorHandler = (error, request, response, next) =>{
-    console.log( `error ${error.message}`)
-    const status = error.status || 400
+const errorHandler = (err, req, res, next) =>{
+    const status = err.status || 400;
+    let error = err.message;
     // send back an easily understandable error message to the caller
-    response.status(status).json({
+    if(err.name == 'ValidationError'){
+        let errors = {};
+        Object.keys(err.errors).forEach((key) => {
+            errors[key] = err.errors[key].message;
+        });
+        error = errors;
+    }
+    if(err.code == 11000){
+        let message = `Duplicate ${Object.keys(Object(err).keyValue)[0]} value entered!`;
+        error = new Error(message);
+    }
+
+    if(err.name == 'Error'){
+        let message = `${err}!`;
+        error = new Error(message);
+    }
+    res.status(status).json({
         success:false,
-        message:error.message
+        error:error.message,
+        validation:error
     })
 }
 

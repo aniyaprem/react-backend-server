@@ -27,7 +27,7 @@ exports.states = async (req, res, next)=>{
     try{
         let country_id = parseInt(req.params.country_id);
         const states = await State.find({country_id:country_id});
-        if(states.length<0){
+        if(states.length==0){
             res.status(400).json({
                 success:false,
                 error:'No states found!'
@@ -46,8 +46,9 @@ exports.states = async (req, res, next)=>{
 
 exports.cities = async (req, res, next)=>{
     try{
-        const cities = await City.find({state_id:req.params.state_id});
-        if(!cities){
+        let state_id = parseInt(req.params.state_id);
+        const cities = await City.find({state_id:state_id});
+        if(cities.length<1){
             res.status(400).json({
                 success:false,
                 error:'No cities found!'
@@ -59,7 +60,6 @@ exports.cities = async (req, res, next)=>{
             data:cities
         })
     }catch(err){
-        console.log(err.red.bold)
-        next(err)
+        next(new Error(err))
     }
 }

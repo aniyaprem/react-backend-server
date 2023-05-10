@@ -4,15 +4,17 @@ var bcrypt = require('bcryptjs');
 const UserSchema = new mongoose.Schema({
     name:{
         type:String,
-        require:[true, 'Name field is must required!']
+        required:[true, 'Name field is must required!']
     },
     email:{
         type:String,
-        require:[true, 'Email field is must required!']
+        unique:true,
+        required:[true, 'Email field is must required!']
     },
     phone:{
-        type:String,
-        require:[true, 'Phone number is must required!']
+        type:Number,
+        unique:true,
+        required:[true, 'Phone number is must required!']
     },
     photo:{
         type:String,
@@ -20,19 +22,24 @@ const UserSchema = new mongoose.Schema({
     },
     country:{
         type:Number,
-        require:[true, 'Please select any courtry!']
+        required:[true, 'Please select any courtry!']
     },
     state:{
         type:Number,
-        require:[true, 'Please select any state!']
+        required:[true, 'Please select any state!']
     },
     city:{
         type:Number,
-        require:[true, 'Please select any city!']
+        required:[true, 'Please select any city!']
+    },
+    role:{
+        type:String,
+        enum : ['user','admin'],
+        default: 'user'
     },
     password:{
         type:String,
-        require:[true, 'Password field is must required!'],
+        required:[true, 'Password field is must required!'],
         min: [8, 'Minimum 8 charcters required for password'],
     },
     createAt:{
@@ -45,14 +52,24 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-UserSchema.pre('save', async function(next){
-    if(this.password){
-        let salt = bcrypt.genSaltSync(10);
-        let hash = bcrypt.hashSync(this.password, salt);
-        this.pasword = hash;
-        next();
-    }
-})
+// UserSchema.pre('save', async function(next){
+//     try{
+//         const user = this;
+    
+//         bcrypt.genSalt(10, function(err, salt){
+//             if (err){ return next(err) }
+//             bcrypt.hash(user.password, salt, null, function(err, hash){
+//                 if(err){return next(err)}
+//                 user.password = hash;
+//                 next();
+//             })
+//         })
+//     }catch(err){
+//         console.log(err)
+//         return next(err);
+//     }
+    
+// })
 
 const User = mongoose.model('users', UserSchema);
 module.exports = User;
