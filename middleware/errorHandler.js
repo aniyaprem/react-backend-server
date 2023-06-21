@@ -3,10 +3,14 @@ const errorHandler = (err, req, res, next) =>{
     let error = err.message;
     // send back an easily understandable error message to the caller
     if(err.name == 'ValidationError'){
-        let errors = {};
-        Object.keys(err.errors).forEach((key) => {
-            errors[key] = err.errors[key].message;
+        let errors = [];
+        Object.values(err.errors).map((item)=>{
+            errors.push(item.message);
         });
+        // let errors = {};
+        // Object.keys(err.errors).forEach((key) => {
+        //     errors[key] = err.errors[key].message;
+        // });
         error = errors;
     }
     if(err.code == 11000){

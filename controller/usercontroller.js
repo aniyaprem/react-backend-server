@@ -15,7 +15,8 @@ exports.register = async (req, res, next)=>{
             var salt = await bcrypt.genSalt(10);
             var hash = await bcrypt.hash(req.body.password, salt);
             req.body.password = hash;
-        } 
+        }
+        
         const user = await User.create(req.body);
         res.status(200).json({
             success:true,
@@ -29,7 +30,19 @@ exports.register = async (req, res, next)=>{
 
 exports.login = async (req, res, next)=>{
     try{
-        console.log(req.cookies);
+        if(req.body.email==""){
+            return res.status(400).json({
+                success:false,
+                error:'Email is required!'
+            });
+        }
+
+        if(req.body.password==""){
+            return res.status(400).json({
+                success:false,
+                error:'Password is required!'
+            }); 
+        }
         // const emailRegexp = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
         // if(emailRegexp.test(req.body.email)){
         //     return res.status(400).json({
@@ -51,18 +64,19 @@ exports.login = async (req, res, next)=>{
             const token = jwt.sign({id: user._id }, process.env.TOKEN_KEY, {expiresIn: expiresIn});
             jwt.verify(token, process.env.TOKEN_KEY, function(err, decoded) {
                 if(err){
-                    
                     res.status(401).json({
                         success:false,
                         message:err.message
                     });
                 }else{
                     res.cookie('auth', token, {
-                        maxAge: 1000 * 60 * 24,
-                        expires: 1000 * 60 * 24,
+                        maxAge: 1000 * 60 * 60 * 24,
+                        expires: 1000 * 60 * 60 * 24,
+                        Domain:'http://localhost:3000',
+                        path:'/',
                         secure: true,
-                        httpOnly: true,
-                        sameSite: 'none'
+                        httpOnly: false,
+                        SameSite: 'none'
                     })
                     res.status(200).json({
                         success:true,

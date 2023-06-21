@@ -1,4 +1,4 @@
-exports.Protect = async (req, res, next)=>{
+exports.Auth = async (req, res, next)=>{
     try{
         console.log(req.headers);
         next()

@@ -19,9 +19,8 @@ const port = process.env.PORT;
 app.use(bodyParser.json())
 // for parsing application/xwww-
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // app.use(cors());
-app.use(cookieParser());
 app.use(
     cors({
         origin: ['http://localhost:3000'],
@@ -29,8 +28,20 @@ app.use(
         credentials: true,
     })
 );
+app.use(cookieParser());
 
-app.use(fileUpload());
+app.use(function(req, res, next) {
+    res.header('Content-Type', 'application/json;charset=UTF-8')
+    res.header('Access-Control-Allow-Credentials', true)
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept'
+    )
+    next()
+})
+
+app.use(fileUpload({useTempFile: true}));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(router);
 app.use(errorHandler);
 
