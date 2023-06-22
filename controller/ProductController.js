@@ -39,3 +39,16 @@ exports.createProduct = async (req, res, next)=>{
         next(err)
     }
 }
+
+exports.productList = async (req, res, next)=>{
+    try{
+        const products = await Product.find().sort({ createdAt: -1 });
+        return res.status(200).json({
+            success:true,
+            data:products
+        });
+    }catch(err){
+        console.log(`productlist:${err}`);
+        next(err);
+    }
+}
