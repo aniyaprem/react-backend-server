@@ -4,6 +4,8 @@ const slugify = require('slugify');
 const path = require('path');
 
 exports.createProduct = async (req, res, next)=>{
+    console.log(req.body);
+    console.log(req.body.files);
     try{
         if(req.body.name != ""){
             req.body.name = slugify(req.body.name, '-');

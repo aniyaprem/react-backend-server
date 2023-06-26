@@ -17,6 +17,10 @@ const ProductSchema = new mongoose.Schema({
         type:Number,
         required:[true, 'Product sale price is required!']
     },
+    categories:{
+        type:String,
+        default:null
+    },
     description:{
         type:Number,
         required:[true, 'Product description is required!']
