@@ -8,7 +8,8 @@ const {
 
 const {
     createProduct,
-    productList
+    deleteProduct,
+    productList,
 } = require('../controller/ProductController');
 
 const {
@@ -40,5 +41,6 @@ router.post('/api/v1/create-category/', addCategory);
 router.get('/api/v1/single-category/:id', singleCategory);
 router.put('/api/v1/update-category/:id', updateCategory);
 router.delete('/api/v1/category-delete/:id', deleteCatgory);
+router.delete('/api/v1/product-delete/:id', deleteProduct);
 
 module.exports = router;

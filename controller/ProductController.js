@@ -1,42 +1,31 @@
-const ProductImage = require('../model/ProductImage');
 const Product = require('../model/Product');
 const slugify = require('slugify');
 const path = require('path');
+const fs = require("fs");
 
 exports.createProduct = async (req, res, next)=>{
-    console.log(req.body);
-    console.log(req.body.files);
     try{
         if(req.body.name != ""){
             req.body.name = slugify(req.body.name, '-');
         }
-        const product = await Product.create(req.body);
-        
         if(req.files){
-            for(let x in req.files.image){
-                let image = req.files.image[x];
-                let uploadPath = path.join('uploads/'+image.name);
-                image.mv(uploadPath, function(err) {
-                    if(err){
-                        res.status(500).json({
-                            success:false,
-                            data:err
-                        }) 
-                    };
-                });
-
-                const Images = await ProductImage.create({image:req.files.image[x].name});
-                console.log(Images);
-                console.log(req.files.image[x].name);
-            }
+            let image = req.files.image;
+            let uploadPath = path.join('uploads/products/'+image.name);
+            image.mv(uploadPath, function(err) {
+                if(err){
+                    res.status(500).json({
+                        success:false,
+                        data:err
+                    }) 
+                };
+            });
+            req.body.image = image.name;
         }
-
+        const product = await Product.create(req.body);
         return res.status(200).json({
             success:true,
             data:product
         });
-        
-        
     }catch(err){
         next(err)
     }
@@ -51,6 +40,36 @@ exports.productList = async (req, res, next)=>{
         });
     }catch(err){
         console.log(`productlist:${err}`);
+        next(err);
+    }
+}
+
+exports.deleteProduct = async (req, res, next)=>{
+    try{
+        const product = await Product.findOne({_id:req.params.id});
+        if(product){
+            fs.unlink(path.join('uploads/'+product.image) , (err) => {
+                if (err) {
+                    res.status(500).send({
+                        message: "Could not delete the file. " + err,
+                    });
+                }
+            });
+            let delted = await Product.findOneAndDelete({_id:req.params.id});
+            if(delted){
+                return res.status(200).json({
+                    success:true, 
+                    message:"Product deleted successfully !"
+                });
+            }
+        }
+
+        return res.status(200).json({
+            success:false, 
+            message:"Product does not exist !"
+        });
+    }catch(err){
+        console.log(`deleteproduct:${err}`)
         next(err);
     }
 }

@@ -18,16 +18,18 @@ const ProductSchema = new mongoose.Schema({
         required:[true, 'Product sale price is required!']
     },
     categories:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Category",
         default:null
     },
     description:{
-        type:Number,
+        type:String,
         required:[true, 'Product description is required!']
     },
     author:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        ref:"User",
+        default:null
     },
     createdAt:{
         type:Date,

@@ -10,7 +10,7 @@ exports.addCategory = async (req, res, next)=>{
         req.body.photo = "";
         if(req.files){
             let image = req.files.image;
-            let uploadPath = path.join('uploads/'+image.name);
+            let uploadPath = path.join('uploads/category/'+image.name);
             image.mv(uploadPath, function(err) {
                 if(err){
                     res.status(500).json({
@@ -55,18 +55,30 @@ exports.categoryList = async (req, res, next)=>{
 
 exports.deleteCatgory = async(req, res, next)=>{
     try{
-        const category = await Category.findOneAndDelete({_id:req.params.id});
+        const category = await Category.findOne({_id:req.params.id});
+        if(category){
+            fs.unlink(path.join('uploads/category/'+category.photo) , (err) => {
+                if (err) {
+                    res.status(500).send({
+                        message: "Could not delete the file. " + err,
+                    });
+                }
+            });
+
+            const deleted = await Category.findOneAndDelete({_id:req.params.id});
+            if(deleted){
+                return res.status(200).json({
+                    success:true, 
+                    message:"Category deleted successfully !"
+                });
+            }
+        }
         if(!category){
             return res.status(200).json({
                 success:false, 
                 message:"Category does not found !"
             });
         }
-
-        return res.status(200).json({
-            success:true, 
-            message:"Category deleted successfully !"
-        });
     }catch(err){
         console.log(`deleteCat: ${err}`);
         next(err);
@@ -99,7 +111,7 @@ exports.updateCategory = async (req, res, next)=>{
         if(req.files){
             const category = await Category.findOne({_id:req.params.id});
             if(category){
-                fs.unlink(path.join('uploads/'+category.photo) , (err) => {
+                fs.unlink(path.join('uploads/category/'+category.photo) , (err) => {
                     if (err) {
                         res.status(500).send({
                             message: "Could not delete the file. " + err,
@@ -109,7 +121,7 @@ exports.updateCategory = async (req, res, next)=>{
             }
 
             let image = req.files.image;
-            let uploadPath = path.join('uploads/'+image.name);
+            let uploadPath = path.join('uploads/category/'+image.name);
             image.mv(uploadPath, function(err) {
                 if(err){
                     res.status(500).json({
