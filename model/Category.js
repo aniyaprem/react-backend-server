@@ -15,7 +15,8 @@ const CategorySchema = new mongoose.Schema({
     },
     parentId:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Category"
+        ref:"Category",
+        default:null
     },
     
     createdAt:{

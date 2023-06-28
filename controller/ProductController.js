@@ -6,7 +6,7 @@ const fs = require("fs");
 exports.createProduct = async (req, res, next)=>{
     try{
         if(req.body.name != ""){
-            req.body.name = slugify(req.body.name, '-');
+            req.body.slug = slugify(req.body.name, '-');
         }
         if(req.files){
             let image = req.files.image;
@@ -19,7 +19,7 @@ exports.createProduct = async (req, res, next)=>{
                     }) 
                 };
             });
-            req.body.image = image.name;
+            req.body.image = `uploads/products/${image.name}`;
         }
         const product = await Product.create(req.body);
         return res.status(200).json({
@@ -36,7 +36,8 @@ exports.productList = async (req, res, next)=>{
         const products = await Product.find().sort({ createdAt: -1 });
         return res.status(200).json({
             success:true,
-            data:products
+            data:products,
+            user:req.user
         });
     }catch(err){
         console.log(`productlist:${err}`);
@@ -48,7 +49,7 @@ exports.deleteProduct = async (req, res, next)=>{
     try{
         const product = await Product.findOne({_id:req.params.id});
         if(product){
-            fs.unlink(path.join('uploads/'+product.image) , (err) => {
+            fs.unlink(path.join(product.image) , (err) => {
                 if (err) {
                     res.status(500).send({
                         message: "Could not delete the file. " + err,

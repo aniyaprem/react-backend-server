@@ -5,6 +5,10 @@ const ProductSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Product name is required!']
     },
+    slug:{
+        type:String,
+        default:null
+    },
     image:{
         type:String,
         required:[true, 'Product image is required!']

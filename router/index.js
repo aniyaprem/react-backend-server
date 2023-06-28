@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router();
+const Protect = require('../middleware/protect');
+const auth = require('../middleware/auth');
 
 const {
     login,
@@ -33,7 +35,7 @@ router.get('/api/v1/countries', countries);
 router.get('/api/v1/cities/:state_id', cities);
 router.get('/api/v1/states/:country_id', states);
 
-router.get('/api/v1/product-list/', productList);
+router.get('/api/v1/product-list/', Protect, auth, productList);
 router.post('/api/v1/create-product/', createProduct);
 
 router.get('/api/v1/category-list/', categoryList);

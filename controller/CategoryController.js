@@ -19,7 +19,7 @@ exports.addCategory = async (req, res, next)=>{
                     }) 
                 };
             });
-            req.body.photo = image.name;
+            req.body.photo = 'uploads/category/'+image.name;
         }
         
         if(req.body.name != "" && req.body.name.split(" ").length > 0){
@@ -57,7 +57,7 @@ exports.deleteCatgory = async(req, res, next)=>{
     try{
         const category = await Category.findOne({_id:req.params.id});
         if(category){
-            fs.unlink(path.join('uploads/category/'+category.photo) , (err) => {
+            fs.unlink(path.join(category.photo) , (err) => {
                 if (err) {
                     res.status(500).send({
                         message: "Could not delete the file. " + err,
@@ -111,7 +111,7 @@ exports.updateCategory = async (req, res, next)=>{
         if(req.files){
             const category = await Category.findOne({_id:req.params.id});
             if(category){
-                fs.unlink(path.join('uploads/category/'+category.photo) , (err) => {
+                fs.unlink(path.join(category.photo) , (err) => {
                     if (err) {
                         res.status(500).send({
                             message: "Could not delete the file. " + err,
@@ -130,7 +130,7 @@ exports.updateCategory = async (req, res, next)=>{
                     }) 
                 };
             });
-            req.body.photo = image.name;
+            req.body.photo = 'uploads/category/'+image.name;
         }else{
             req.body.photo = req.body.imagepath
         }
@@ -141,7 +141,7 @@ exports.updateCategory = async (req, res, next)=>{
             req.body.slug = req.body.name;
         }
 
-        req.body.parentId = req.body.parentId == "" ? new mongoose.Types.ObjectId(): req.body.parentId;
+        // req.body.parentId = req.body.parentId == "" ? new mongoose.Types.ObjectId(): req.body.parentId;
         const category = await Category.findOneAndUpdate(req.params.id, {$set : req.body});
         if(!category){
             return res.status(200).json({
